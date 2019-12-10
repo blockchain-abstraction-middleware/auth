@@ -1,0 +1,50 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: circleci/golang:1.12
+    steps: 
+      - checkout
+      - run:
+          make test
+  build-deploy:
+    docker:
+      - image: bamdockerhub/apline-kube-terraform
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: |
+            export TF_VAR_docker_image=bamdockerhub/auth
+            docker build -t $TF_VAR_docker_image .
+            docker login -u $DOCKER_NAME -p $DOCKER_PW
+            docker push $TF_VAR_docker_image
+      - run:
+          name: Terrafrom deploy
+          command: |
+            curl -X GET \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${DO_TOKEN}" \
+              "https://api.digitalocean.com/v2/kubernetes/clusters/${CLUSTER_ID}/kubeconfig" > config
+
+            export KUBECONFIG=/root/project/config
+
+            terraform init -backend-config="conn_str=$PG_URI"
+
+            terraform workspace select go-apis
+            export IS_ALIVE=$(terraform taint module.go_api_deployment_auth.kubernetes_deployment.main)
+            terraform apply -auto-approve
+
+workflows:
+  version: 2
+  test-deploy:
+    jobs:
+      - test
+      - build-deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master

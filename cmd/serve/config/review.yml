@@ -1,0 +1,4 @@
+environment: review
+name: auth
+port: 8080
+metrics: false
