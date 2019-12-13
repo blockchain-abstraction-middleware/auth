@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
-  title: Project Template
-  description: This is a sample project template to be used to scaffold blockchain services
+  title: Authorization Service
+  description: This is a service that checks if incoming requests are authorized to access the api
   contact:
     email: support@bam.io
   license:
@@ -9,16 +9,16 @@ info:
     url: https://opensource.org/licenses/MIT
   version: 1.0.0
 tags:
-- name: auth
+- name: Authorization Service
   description: Auth Endpoint
   externalDocs:
     description: Find out more
-    url: http://swagger.io
+    url: http://staging.chain-abstraction.dev
 paths:
   /api/v1/health/status:
     get:
       tags:
-      - auth
+      - Authorization Service
       summary: Check the health of the service
       operationId: healthCheck
       responses:
@@ -39,6 +39,24 @@ paths:
       security:
       - auth:
         - bam:access
+  /api/v1/auth/auth:
+    get:
+      tags:
+      - Authorization Service
+      summary: Checks if user is authenticated
+      operationId: authCheck
+      responses:
+        200:
+          description: User is authorized
+        401:
+          description: Unauthorized
+          content: {}
+        500:
+          description: Internal Server Error
+          content: {}
+      security:
+        - Auth: []
+        - AuthId: []
 components:
   schemas:
     Health:
@@ -50,3 +68,12 @@ components:
         statusCode:
           type: number
           example: 200
+  securitySchemes:
+    Auth:
+      type: apiKey
+      in: header
+      name: Bam-Key
+    AuthId:
+      type: apiKey
+      in: header
+      name: Eth-Id

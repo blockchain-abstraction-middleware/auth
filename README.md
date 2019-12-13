@@ -34,14 +34,8 @@ Swagger ui will be exposed at:
 0.0.0.0:8080/api/v1/swagger/docs/swaggerui/
 ```
 
-
-### Things to update 
-
-`main.tf`
-- Line 12: update module "name"
-- Line 15: update deployment_name
-- Line 16: update docker_image
-
-`.circleci/config.yml`
-- Line 20: update TF_VAR_docker_image to === the name in `main.tf`
-- Line 37: update  `terraform taint module.'your_module_name'.kubernetes_deployment.main` to === name in `main.tf`
+### Auth endpoint
+The auth endpoint checks the header and returns 200 if the headers are correct
+```
+curl -v -H "eth-id: 0xb4FC6774a95A86134768d81A8eE19Cfbf5A171F6" -H "bam-key: key12345" 0.0.0.0:8080/api/v1/auth/auth
+```
