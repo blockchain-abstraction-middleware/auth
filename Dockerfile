@@ -16,4 +16,6 @@ COPY --from=build-env /go/src/github.com/blockchain-abstraction-middleware/auth/
 
 COPY --from=build-env /go/src/github.com/blockchain-abstraction-middleware/auth/cmd/serve/config ./config
 
+COPY --from=build-env /go/src/github.com/blockchain-abstraction-middleware/auth/cmd/serve/docs ./docs
+
 CMD ["/usr/local/bin/app"]
