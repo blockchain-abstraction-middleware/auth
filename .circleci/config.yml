@@ -33,7 +33,7 @@ jobs:
 
             terraform init -backend-config="conn_str=$PG_URI"
 
-            terraform workspace select go-apis
+            terraform workspace select auth
             export IS_ALIVE=$(terraform taint module.go_api_deployment_auth.kubernetes_deployment.main)
             terraform apply -auto-approve
 

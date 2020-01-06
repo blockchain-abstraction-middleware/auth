@@ -6,7 +6,7 @@ import (
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
-// DB will contrain the read/write db logic
+// DB will contain the read/write db logic
 type DB struct {
 	leveldb *leveldb.DB
 }
@@ -18,7 +18,7 @@ func NewDB(path string) *DB {
 		fmt.Println(err)
 	}
 
-	_ = db.Put([]byte("0xb4FC6774a95A86134768d81A8eE19Cfbf5A171F6"), []byte("1key12345"), nil)
+	// _ = db.Put([]byte("0xb4FC6774a95A86134768d81A8eE19Cfbf5A171F6"), []byte("1key12345"), nil)
 	_ = db.Put([]byte("0x7A7645f880248176998C6aB717b67ff60aAb106B"), []byte("2key12345"), nil)
 	_ = db.Put([]byte("0x9290E64f25FEF981963566079e95fb2E6728Ab61"), []byte("3key12345"), nil)
 	_ = db.Put([]byte("0xfe24C938Ca2EA10c56dc4c7AE81fA3AAe8854Bde"), []byte("4key12345"), nil)
@@ -36,4 +36,11 @@ func (db *DB) GetData(key string) (string, error) {
 	value, err := db.leveldb.Get([]byte(key), nil)
 
 	return string(value), err
+}
+
+// PutData puts key, value data into the database
+func (db *DB) PutData(key string, value string) error {
+	err := db.leveldb.Put([]byte(key), []byte(value), nil)
+
+	return err
 }
