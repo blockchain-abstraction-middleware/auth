@@ -4,12 +4,14 @@ import (
 	"github.com/blockchain-abstraction-middleware/auth/pkg/authorization"
 	"github.com/blockchain-abstraction-middleware/auth/pkg/contracts/Authorization"
 	db "github.com/blockchain-abstraction-middleware/auth/pkg/db"
+	keygen "github.com/blockchain-abstraction-middleware/auth/pkg/keygen"
 	auth "github.com/blockchain-abstraction-middleware/auth/pkg/routes"
 	"github.com/blockchain-abstraction-middleware/game-jam-abstraction/pkg/ethereum"
 	log "github.com/blockchain-abstraction-middleware/rest-api/pkg/logger"
 	"github.com/blockchain-abstraction-middleware/rest-api/pkg/routes"
 	"github.com/blockchain-abstraction-middleware/rest-api/pkg/server"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/event"
 )
 
 func main() {
@@ -51,18 +53,9 @@ func main() {
 
 	log.Info("Started database")
 
-	for {
-		select {
-		case err := <-sub.Err():
-			log.Fatal(err)
-		case event := <-as:
-			log.Info("User subscribed: " + event.Account.String())
-			err := db.PutData(event.Account.String(), "hello1234!")
-			if err != nil {
-				log.WithError(err).Error("Failed to put data in db")
-			}
-		}
-	}
+	go listen(sub, db, as)
+
+	log.Info("Started event listener")
 
 	healthResource := routes.HealthResource{}
 	swaggerResource := routes.SwaggerResource{}
@@ -75,5 +68,20 @@ func main() {
 
 	if err := srv.Run(); err != nil {
 		log.WithError(err).Fatal("Serving failed")
+	}
+}
+
+func listen(sub event.Subscription, db *db.DB, as chan *Authorization.AuthorizationSubscribed) {
+	for {
+		select {
+		case err := <-sub.Err():
+			log.Fatal(err)
+		case event := <-as:
+			log.Info("User subscribed: " + event.Account.String())
+			err := db.PutData(event.Account.String(), keygen.GenerateToken(32))
+			if err != nil {
+				log.WithError(err).Error("Failed to put data in db")
+			}
+		}
 	}
 }
