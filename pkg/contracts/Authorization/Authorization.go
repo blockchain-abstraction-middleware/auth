@@ -28,7 +28,7 @@ var (
 )
 
 // AuthorizationABI is the input ABI used to generate the binding from.
-const AuthorizationABI = "[{\"constant\":false,\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Subscribed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[],\"name\":\"subscribe\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"}]"
+const AuthorizationABI = "[{\"constant\":false,\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Subscribed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"hasWithdrawn\",\"type\":\"bool\"}],\"name\":\"Withdraw\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[],\"name\":\"subscribe\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"widthdraw\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // Authorization is an auto generated Go binding around an Ethereum contract.
 type Authorization struct {
@@ -285,6 +285,27 @@ func (_Authorization *AuthorizationSession) TransferOwnership(newOwner common.Ad
 // Solidity: function transferOwnership(address newOwner) returns()
 func (_Authorization *AuthorizationTransactorSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
 	return _Authorization.Contract.TransferOwnership(&_Authorization.TransactOpts, newOwner)
+}
+
+// Widthdraw is a paid mutator transaction binding the contract method 0x52b50a2a.
+//
+// Solidity: function widthdraw() returns()
+func (_Authorization *AuthorizationTransactor) Widthdraw(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _Authorization.contract.Transact(opts, "widthdraw")
+}
+
+// Widthdraw is a paid mutator transaction binding the contract method 0x52b50a2a.
+//
+// Solidity: function widthdraw() returns()
+func (_Authorization *AuthorizationSession) Widthdraw() (*types.Transaction, error) {
+	return _Authorization.Contract.Widthdraw(&_Authorization.TransactOpts)
+}
+
+// Widthdraw is a paid mutator transaction binding the contract method 0x52b50a2a.
+//
+// Solidity: function widthdraw() returns()
+func (_Authorization *AuthorizationTransactorSession) Widthdraw() (*types.Transaction, error) {
+	return _Authorization.Contract.Widthdraw(&_Authorization.TransactOpts)
 }
 
 // AuthorizationOwnershipTransferredIterator is returned from FilterOwnershipTransferred and is used to iterate over the raw logs and unpacked data for OwnershipTransferred events raised by the Authorization contract.
@@ -577,6 +598,139 @@ func (_Authorization *AuthorizationFilterer) WatchSubscribed(opts *bind.WatchOpt
 func (_Authorization *AuthorizationFilterer) ParseSubscribed(log types.Log) (*AuthorizationSubscribed, error) {
 	event := new(AuthorizationSubscribed)
 	if err := _Authorization.contract.UnpackLog(event, "Subscribed", log); err != nil {
+		return nil, err
+	}
+	return event, nil
+}
+
+// AuthorizationWithdrawIterator is returned from FilterWithdraw and is used to iterate over the raw logs and unpacked data for Withdraw events raised by the Authorization contract.
+type AuthorizationWithdrawIterator struct {
+	Event *AuthorizationWithdraw // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *AuthorizationWithdrawIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(AuthorizationWithdraw)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(AuthorizationWithdraw)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *AuthorizationWithdrawIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *AuthorizationWithdrawIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// AuthorizationWithdraw represents a Withdraw event raised by the Authorization contract.
+type AuthorizationWithdraw struct {
+	HasWithdrawn bool
+	Raw          types.Log // Blockchain specific contextual infos
+}
+
+// FilterWithdraw is a free log retrieval operation binding the contract event 0xfe589245338ce477b4fb3c95d7fef59c7ae5fb37c54522f0e5e8922e56039247.
+//
+// Solidity: event Withdraw(bool hasWithdrawn)
+func (_Authorization *AuthorizationFilterer) FilterWithdraw(opts *bind.FilterOpts) (*AuthorizationWithdrawIterator, error) {
+
+	logs, sub, err := _Authorization.contract.FilterLogs(opts, "Withdraw")
+	if err != nil {
+		return nil, err
+	}
+	return &AuthorizationWithdrawIterator{contract: _Authorization.contract, event: "Withdraw", logs: logs, sub: sub}, nil
+}
+
+// WatchWithdraw is a free log subscription operation binding the contract event 0xfe589245338ce477b4fb3c95d7fef59c7ae5fb37c54522f0e5e8922e56039247.
+//
+// Solidity: event Withdraw(bool hasWithdrawn)
+func (_Authorization *AuthorizationFilterer) WatchWithdraw(opts *bind.WatchOpts, sink chan<- *AuthorizationWithdraw) (event.Subscription, error) {
+
+	logs, sub, err := _Authorization.contract.WatchLogs(opts, "Withdraw")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(AuthorizationWithdraw)
+				if err := _Authorization.contract.UnpackLog(event, "Withdraw", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseWithdraw is a log parse operation binding the contract event 0xfe589245338ce477b4fb3c95d7fef59c7ae5fb37c54522f0e5e8922e56039247.
+//
+// Solidity: event Withdraw(bool hasWithdrawn)
+func (_Authorization *AuthorizationFilterer) ParseWithdraw(log types.Log) (*AuthorizationWithdraw, error) {
+	event := new(AuthorizationWithdraw)
+	if err := _Authorization.contract.UnpackLog(event, "Withdraw", log); err != nil {
 		return nil, err
 	}
 	return event, nil
