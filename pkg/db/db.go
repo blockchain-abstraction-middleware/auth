@@ -18,7 +18,7 @@ func NewDB(path string) *DB {
 		fmt.Println(err)
 	}
 
-	_ = db.Put([]byte("0xfe24C938Ca2EA10c56dc4c7AE81fA3AAe8854Bde"), []byte("4key12345"), nil)
+	_ = db.Put([]byte("0x8c6253A7dCCE198b4385f17f390bC6fcE34A19Ea"), []byte("4key12345"), nil)
 
 	return &DB{
 		leveldb: db,

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/blockchain-abstraction-middleware/auth/pkg/authorization"
+	authorization "github.com/blockchain-abstraction-middleware/auth/pkg/authorization"
 	"github.com/blockchain-abstraction-middleware/auth/pkg/contracts/Authorization"
 	db "github.com/blockchain-abstraction-middleware/auth/pkg/db"
 	keygen "github.com/blockchain-abstraction-middleware/auth/pkg/keygen"
@@ -35,7 +35,7 @@ func main() {
 		log.WithError(err).Error("Failed to initialize ethereum client")
 	}
 
-	authorization, err := authorization.NewAuthorization(ec, "0xce1077cb99709dba18333ceed9752e9bbc967dff", nil)
+	authorization, err := authorization.NewAuthorization(ec, "0x2EB497307f6CAE5194EC10Dc09e8C8804e32643f", nil)
 	if err != nil {
 		log.WithError(err).Error("Failed to create game jam manager")
 	}
